@@ -55,7 +55,7 @@ for s in song_list:
 
 def mainPage():
     ws.destroy()
-    import mainPage
+    import playPage
 
 def lyricsPage():
     ws.destroy()
