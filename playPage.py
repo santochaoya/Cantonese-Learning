@@ -5,10 +5,14 @@ from learnCantonese import *
 from utils import *
 
 ws = Tk()
-ws.title('Learn Cantonese')
+ws.title('All Songs')
 center_window(ws)
 
-# Create menu
+# ------------------------------------------------------------------
+#  Create menu bar
+#   ** Mian/Select Songs, Main/New Words **
+# ------------------------------------------------------------------
+
 def songPage():
     ws.destroy()
     import songsPage
@@ -18,18 +22,21 @@ def newBooksPage():
     import newBooksPage
 
 menubar = Menu(ws)
-filemenu = Menu(menubar, tearoff=0)
-menubar.add_cascade(label='Main', menu=filemenu)
+mainmenu = Menu(menubar, tearoff=0)
 
-filemenu.add_command(label='Select Songs', command=songPage)
-filemenu.add_command(label='New Words', command=newBooksPage)
-filemenu.add_separator()
-filemenu.add_command(label='Exit', command=ws.quit)
+menubar.add_cascade(label='Main', menu=mainmenu)
+mainmenu.add_command(label='Select Songs', command=songPage)
+mainmenu.add_command(label='New Words', command=newBooksPage)
+mainmenu.add_separator()
+mainmenu.add_command(label='Exit', command=ws.quit)
 
-# Show menubar on window
 ws.config(menu=menubar)
 
-# text to show chinese lyrics
+# ------------------------------------------------------------------
+#  Create a text to show a line of Chinese lyric
+#  -- iteral to get each line of Chinese lyric
+# ------------------------------------------------------------------
+
 cn_l = StringVar()
 tl = ['123', '253234', '5234']
 
