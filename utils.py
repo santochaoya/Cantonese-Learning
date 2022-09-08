@@ -7,8 +7,8 @@ def center_window(window):
     """
 
     # Window size
-    ws_width = 800
-    ws_height = 600
+    ws_width = 600
+    ws_height = 450
 
     # Set Window to center
     screen_width = window.winfo_screenwidth()
