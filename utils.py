@@ -19,3 +19,9 @@ def center_window(window):
 
     # set window to the center of the screen
     window.geometry(f'{ws_width}x{ws_height}+{center_x}+{center_y}')
+
+    # prohibit resizing
+    window.resizable(False, False)
+
+    # Add window icon
+    window.iconbitmap('assets/windowIcon.icns')

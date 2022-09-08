@@ -6,7 +6,7 @@ from utils import *
 
 ws = Tk()
 ws.title('Learn Cantonese')
-ws.geometry('800x600+10+10')
+center_window(ws)
 
 # Create menu
 def songPage():
