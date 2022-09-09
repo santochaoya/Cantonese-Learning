@@ -5,10 +5,14 @@ from learnCantonese import *
 from utils import *
 
 ws = Tk()
-ws.title('Learning Cantonese')
+ws.title('All Songs')
 center_window(ws)
 
-# Create menu
+# ------------------------------------------------------------------
+#  Create menu bar
+#   ** Mian/Select Songs, Main/New Words **
+# ------------------------------------------------------------------
+
 def songPage():
     ws.destroy()
     import songsPage
@@ -16,8 +20,6 @@ def songPage():
 def newBooksPage():
     ws.destroy()
     import newBooksPage
-
-# --------------- main menu ------------------
 
 menubar = Menu(ws)
 mainmenu = Menu(menubar, tearoff=0)
@@ -28,11 +30,13 @@ mainmenu.add_command(label='New Words', command=newBooksPage)
 mainmenu.add_separator()
 mainmenu.add_command(label='Exit', command=ws.quit)
 
-submenu = Menu(mainmenu, tearoff=0)
-mainmenu.add_cascade(label='')
-
-# Show menubar on window
 ws.config(menu=menubar)
+
+# ------------------------------------------------------------------
+#  Create a listbox to show all songs
+#  -- order of songs is based on sort method in folder
+# ------------------------------------------------------------------
+
 
 ws.mainloop()
 

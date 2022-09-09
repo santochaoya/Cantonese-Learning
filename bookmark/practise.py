@@ -755,12 +755,12 @@ import tkinter as tk
 
 def main9():
 
-    ws = tk.Tk() # create a window
+    ws = Tk() # create a window
     ws.title('my window') # define window title
     ws.geometry('200x200') # define window size
 
     # create a label
-    l = tk.Label(ws, bg='green', width=20, text='') 
+    l = Label(ws, bg='green', width=20, text='') 
     l.pack()
 
     counter = 0
@@ -802,6 +802,7 @@ def main9():
     ws.config(menu=menubar)
 
     ws.mainloop()
+
 
 
 # ----------------------------------------------------------------------
