@@ -19,45 +19,72 @@ from utils import *
 #  -- Create buttons for next step
 # ------------------------------------------------------------------
 
-def songPage(ws1, ws2, ws3):
+def get_song(lb):
+    value = lb.get(lb.curselection())
+    SONG.set(value)
+        
+def songPage(ws):
+
+    # Song Page
+    ws1 = Toplevel(ws)
+    ws1.title('Select Songs')
+    center_window(ws1)
 
     # Create a listbox
     all_f = glob.glob('data/songs/*.txt')
     SONG_LIST = [x[11:-4] for x in all_f]
 
-    lb = Listbox(ws1, listvariable=SONG_LIST, width=50, height=20, borderwidth=0, bg='#3D3D3D', selectbackground='#2B57B7', activestyle='none')
+    lb = Listbox(ws1, listvariable=SONG_LIST, width=50, height=20, borderwidth=0, bg='#3D3D3D', selectbackground='#2B57B7', activestyle='none', selectmode=SINGLE)
     for s in SONG_LIST:
         lb.insert('end', s)
-
-    # Create buttons
-    b1 = Button(ws1, text='Play Cantonese', command=lambda: gamePage(ws2), width=200, bg='#616161', fg='white')
-    b2 = Button(ws1, text='Show Lyrics', command=lambda: lyricsPage(ws3), width=200, bg='#616161', fg='white')
     
+    # Create buttons
+    def enter_lyricsPage(ws, lb):
+        lyricsPage(ws, lb)
+        ws1.destroy()
+
+
+    b1 = Button(ws1, text='Play Cantonese', command=lambda: gamePage(ws2), width=200, bg='#616161', fg='white')
+    b2 = Button(ws1, text='Show Lyrics', command=lambda: enter_lyricsPage(ws, lb), width=200, bg='#616161', fg='white')
+
     lb.grid(column=0, row=0, columnspan=2, padx=75, pady=20)
     b1.grid(column=0, row=1, padx=10, pady=10)
     b2.grid(column=1, row=1, padx=10, pady=10)
 
+
     ws1.mainloop()
 
-    return lb
-
-# ------------------------------------------------------------------
+# -----------------------------------------------20-------------------
 #  Lyrics Page
 #  -- Create a Label to display lyrics
 # ------------------------------------------------------------------
 
-def lyricsPage(ws1, ws3, lb):
 
-    # Close 
-    ws1.destroy()
+def lyricsPage(ws, lb):
 
-    # Create a text Label
+    # Lyrics Page
+    ws3 = Toplevel(ws)
+    ws3.title('Show Lyrics')
+    center_window(ws3)
+    
     get_song(lb)
-    lyric_dir = os.path.join('data/songs', SONG)
-    print(lyric_dir)
 
-    l = Label(ws3, textvariable=lc.show_lyrics(lyric_dir))
-    l.grid()
+    # Create a text
+    lyric_dir = f'data/songs/{SONG.get()}.txt'
+
+    t = Text(ws3, bg='#3D3D3D', width=82, height=28)
+    t.insert('1.0', lc.show_lyrics(lyric_dir))
+    t.configure(state='disabled')
+
+    # Return button
+    def back_songPage(ws):
+        ws3.destroy()
+        songPage(ws)
+    
+    b = Button(ws3, text='Back', command=lambda: back_songPage(ws), width=200, bg='#616161', fg='white')
+
+    t.grid(column=0, row=0, padx=10, pady=20)
+    b.grid(column=0, row=1, pady=10)
 
     ws3.mainloop()
 
@@ -71,40 +98,24 @@ def gamePage(ws):
     import playPage
 
 def newBooksPage(ws):
-    ws1.destroy()
     import newBooksPage
 
-def get_song(lb):
-    value = lb.get(lb.curselection)
-    SONG.set(value)
 
 
 if __name__ == '__main__':
-    
-    # Song Page
-    ws1 = Tk()
-    ws1.title('Select Songs')
-    center_window(ws1)
 
-    # Game Page
-    ws2 = Tk()
-    ws2.title('Lyrics')
-    center_window(ws2)
-
-    # Lyrics Page
-    ws3 = Tk()
-    ws3.title('Lyrics')
-    center_window(ws3)
-
-    # New Words Page
-    ws4 = Tk()
-    ws4.title('New Words')
-    center_window(ws4)
+    ws = Tk()
+    ws.title('Learning Cantonese')
+    center_window(ws)
 
     SONG_LIST = StringVar()
     SONG = StringVar()
-
+    
     # Create components
-    # menubar(ws1, gamePage, newBooksPage)
-    # lb = songPage(ws1, ws2, ws3)
-    ws1.mainloop()
+    menubar(ws, gamePage, newBooksPage)
+
+    b1 = Button(ws, text='Select Songs', command=lambda: songPage(ws), width=200, bg='#616161', fg='white')
+    b2 = Button(ws, text='Learn New Words', command=lambda: newBooksPage(ws), width=200, bg='#616161', fg='white')
+    b1.pack()
+
+    ws.mainloop()

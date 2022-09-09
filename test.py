@@ -1,36 +1,54 @@
-import tkinter as tk
-from tkinter import ttk
+from tkinter import *
 
 
-class Window(tk.Toplevel):
-    def __init__(self, parent):
-        super().__init__(parent)
+root = Tk()
+root.title('Frames')
+root.geometry('500x250+300+300')
 
-        self.geometry('300x100')
-        self.title('Toplevel Window')
+# Position frame
+frame = LabelFrame(root, text='Such a dilemma', padx=25, pady=25)
+frame.pack(padx=10, pady=50)
 
-        ttk.Button(self,
-                text='Close',
-                command=self.destroy).pack(expand=True)
+# What do the buttons do
+def bad():
+    frame.grid_forget()
+    b.grid_forget()
+    b2.grid_forget()
+    slechtekeuze = Label(frame, text='Bad choice')
+    slechtekeuze.grid(row=0, column=0, columnspan=2)
+
+    # Option to got back
+    homepage = Button(frame, text='Go back', command=back)
+    homepage.grid(row=1, column=0, columnspan=2, pady=10)
+
+def good():
+    frame.grid_forget()
+    b.grid_forget()
+    b2.grid_forget()
+    slechtekeuze = Label(frame, text='Good choice')
+    slechtekeuze.grid(row=0, column=0, columnspan=2)
+
+    # Option to go back
+    homepage = Button(frame, text='Terug', command=back)
+    homepage.grid(row=1, column=0, columnspan=2, pady=10)
 
 
-class App(tk.Tk):
-    def __init__(self):
-        super().__init__()
+def back():
+    frame.grid_forget()
+    frame1 = LabelFrame(root, text='Such a dilemma', padx=25, pady=25)
+    frame1.pack(padx=10, pady=50)
 
-        self.geometry('300x200')
-        self.title('Main Window')
+    b = Button(frame1, text="Don't click!!!", fg='red', command=bad)
+    b2 = Button(frame1, text='Click!!!', fg='green', command=good)
 
-        # place a button on the root window
-        ttk.Button(self,
-                text='Open a window',
-                command=self.open_window).pack(expand=True)
+    b.grid(row=0, column=0, padx=3)
+    b2.grid(row=0, column=1, padx=3)
 
-    def open_window(self):
-        window = Window(self)
-        window.grab_set()
+# Create the buttons and put them in the frame
+b = Button(frame, text="Don't click!!!", fg='red', command=bad)
+b2 = Button(frame, text='Click!!!', fg='green', command=good)
 
+b.grid(row=0, column=0, padx=3)
+b2.grid(row=0, column=1, padx=3)
 
-if __name__ == "__main__":
-    app = App()
-    app.mainloop()
+root.mainloop()
