@@ -1,76 +1,110 @@
 from tkinter import *
-from turtle import width
 from tkmacosx import Button
 import glob
+import os
 
-from learnCantonese import *
+import learnCantonese as lc
 from utils import *
-
-ws = Tk()
-ws.title('All Songs')
-center_window(ws)
 
 # ------------------------------------------------------------------
 #  Create menu bar
 #   ** Mian/Select Songs, Main/New Words **
 # ------------------------------------------------------------------
 
-def songPage():
-    ws.destroy()
-    import songsPage
 
-def newBooksPage():
-    ws.destroy()
-    import newBooksPage
-
-menubar = Menu(ws)
-mainmenu = Menu(menubar, tearoff=0)
-
-menubar.add_cascade(label='Main', menu=mainmenu)
-mainmenu.add_command(label='Select Songs', command=songPage)
-mainmenu.add_command(label='New Words', command=newBooksPage)
-mainmenu.add_separator()
-mainmenu.add_command(label='Exit', command=ws.quit)
-
-ws.config(menu=menubar)
 
 # ------------------------------------------------------------------
-#  Create a listbox to show all songs
-#  -- order of songs is based on sort method in folder
+#  Select Song Page
+#  -- Create a listbox to show all songs
+#  -- Create buttons for next step
 # ------------------------------------------------------------------
 
-song_list = StringVar()
+def songPage(ws1, ws2, ws3):
 
-all_f = glob.glob('data/songs/*.txt')
-song_list = [x[11:-4] for x in all_f]
+    # Create a listbox
+    all_f = glob.glob('data/songs/*.txt')
+    SONG_LIST = [x[11:-4] for x in all_f]
 
-lb = Listbox(ws, listvariable=song_list, width=50, height=20, borderwidth=0, bg='#3D3D3D', selectbackground='#2B57B7', activestyle='none')
-for s in song_list:
-    lb.insert('end', s)
+    lb = Listbox(ws1, listvariable=SONG_LIST, width=50, height=20, borderwidth=0, bg='#3D3D3D', selectbackground='#2B57B7', activestyle='none')
+    for s in SONG_LIST:
+        lb.insert('end', s)
 
-# ------------------------------------------------------------------
-#  Create buttons for next step
-#  ** Play Cantonese, Show Lyrics **
-# ------------------------------------------------------------------
+    # Create buttons
+    b1 = Button(ws1, text='Play Cantonese', command=lambda: gamePage(ws2), width=200, bg='#616161', fg='white')
+    b2 = Button(ws1, text='Show Lyrics', command=lambda: lyricsPage(ws3), width=200, bg='#616161', fg='white')
+    
+    lb.grid(column=0, row=0, columnspan=2, padx=75, pady=20)
+    b1.grid(column=0, row=1, padx=10, pady=10)
+    b2.grid(column=1, row=1, padx=10, pady=10)
 
-def mainPage():
-    ws.destroy()
-    import playPage
+    ws1.mainloop()
 
-def lyricsPage():
-    ws.destroy()
-    import lyricsPage
-
-b1 = Button(ws, text='Play Cantonese', command=mainPage, width=200, bg='#616161', fg='white')
-b2 = Button(ws, text='Show Lyrics', command=mainPage, width=200, bg='#616161', fg='white')
+    return lb
 
 # ------------------------------------------------------------------
-#  Display all components on window
+#  Lyrics Page
+#  -- Create a Label to display lyrics
+# ------------------------------------------------------------------
+
+def lyricsPage(ws1, ws3, lb):
+
+    # Close 
+    ws1.destroy()
+
+    # Create a text Label
+    get_song(lb)
+    lyric_dir = os.path.join('data/songs', SONG)
+    print(lyric_dir)
+
+    l = Label(ws3, textvariable=lc.show_lyrics(lyric_dir))
+    l.grid()
+
+    ws3.mainloop()
+
+# ------------------------------------------------------------------
+#  Game Page
 #  ** Listbox, 2 Buttons **
 # ------------------------------------------------------------------
 
-lb.grid(column=0, row=0, columnspan=2, padx=75, pady=20)
-b1.grid(column=0, row=1, padx=10, pady=10)
-b2.grid(column=1, row=1, padx=10, pady=10)
+def gamePage(ws):
+    ws1.destroy()
+    import playPage
 
-ws.mainloop()
+def newBooksPage(ws):
+    ws1.destroy()
+    import newBooksPage
+
+def get_song(lb):
+    value = lb.get(lb.curselection)
+    SONG.set(value)
+
+
+if __name__ == '__main__':
+    
+    # Song Page
+    ws1 = Tk()
+    ws1.title('Select Songs')
+    center_window(ws1)
+
+    # Game Page
+    ws2 = Tk()
+    ws2.title('Lyrics')
+    center_window(ws2)
+
+    # Lyrics Page
+    ws3 = Tk()
+    ws3.title('Lyrics')
+    center_window(ws3)
+
+    # New Words Page
+    ws4 = Tk()
+    ws4.title('New Words')
+    center_window(ws4)
+
+    SONG_LIST = StringVar()
+    SONG = StringVar()
+
+    # Create components
+    # menubar(ws1, gamePage, newBooksPage)
+    # lb = songPage(ws1, ws2, ws3)
+    ws1.mainloop()

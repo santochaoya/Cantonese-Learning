@@ -41,6 +41,7 @@ def main():
 
     button1 = Button(frame, text='Print', command=lambda: print_hello())
     button1.grid()
+    
     # ------------------------------------------------------------------
     # TODO: 6. After reading and understanding the m4e module,
     #   -- Put an Entry box on the Frame.
@@ -49,6 +50,7 @@ def main():
     #        on the Console if the current string in the Entry box
     #        is the string 'ok', but print "Goodbye" otherwise.
     # ------------------------------------------------------------------
+
     e = Entry(frame, bg='light grey', width=100)
     e.grid()
 
@@ -808,4 +810,4 @@ def main9():
 # ----------------------------------------------------------------------
 # Calls  main  to start the ball rolling.
 # ----------------------------------------------------------------------
-main9()
+main4()

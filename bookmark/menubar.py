@@ -244,7 +244,7 @@ if __name__ == "__main__":
 
     def undo(*args):
         print("Undo.")
-a
+
     def redo(*args):
         print("Redo.")
 

@@ -33,9 +33,15 @@ mainmenu.add_command(label='Exit', command=ws.quit)
 ws.config(menu=menubar)
 
 # ------------------------------------------------------------------
-#  Create a listbox to show all songs
-#  -- order of songs is based on sort method in folder
+#  Create a textbox to show lyrics
+#  
 # ------------------------------------------------------------------
+
+
+
+
+
+
 
 
 ws.mainloop()

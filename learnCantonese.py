@@ -22,7 +22,7 @@ def show_lyrics(dir):
     """
 
     lyrics = read_lyrics(dir)
-    print('\n\n'.join(['\n'.join(x) for x in zip(lyrics[0::2], lyrics[1::2])]))
+    return '\n\n'.join(['\n'.join(x) for x in zip(lyrics[::2], lyrics[1::2])])
     
 def read_new_words(dir):
     """ Read new words booklet, if it doesn't exist, create one.
@@ -203,7 +203,8 @@ if __name__ == '__main__':
             play_lyrics(s_dir, W_DIR)
         elif option_s == '2':
             s_dir = start_lyrics(l_dir)
-            show_lyrics(s_dir)
+            print(s_dir)
+            print(show_lyrics(s_dir))
 
     # Check new words
     elif method == '2':
