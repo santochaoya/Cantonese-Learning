@@ -1,54 +1,71 @@
+from dis import dis
 from tkinter import *
+import learnCantonese as lc
+from songsPage import next_lyrics
+from utils import *
 
 
-root = Tk()
-root.title('Frames')
-root.geometry('500x250+300+300')
+ws = Tk()
+ws.title('Check Cantonese')
+center_window(ws)
 
-# Position frame
-frame = LabelFrame(root, text='Such a dilemma', padx=25, pady=25)
-frame.pack(padx=10, pady=50)
+RED = "\033[31m"
+GREEN = "\033[32m"
+RESET = "\033[39m"
 
-# What do the buttons do
-def bad():
-    frame.grid_forget()
-    b.grid_forget()
-    b2.grid_forget()
-    slechtekeuze = Label(frame, text='Bad choice')
-    slechtekeuze.grid(row=0, column=0, columnspan=2)
+lyric_dir = 'data/songs/寻找独角兽.txt'
+clean_l = lc.read_lyrics(lyric_dir)
+cn_l, en_l = clean_l[::2], lc.split_words_tones(clean_l[1::2])
+N = 0
 
-    # Option to got back
-    homepage = Button(frame, text='Go back', command=back)
-    homepage.grid(row=1, column=0, columnspan=2, pady=10)
+print(cn_l)
 
-def good():
-    frame.grid_forget()
-    b.grid_forget()
-    b2.grid_forget()
-    slechtekeuze = Label(frame, text='Good choice')
-    slechtekeuze.grid(row=0, column=0, columnspan=2)
+display_c_l = StringVar()
+display_c_l.set(cn_l[N])
 
-    # Option to go back
-    homepage = Button(frame, text='Terug', command=back)
-    homepage.grid(row=1, column=0, columnspan=2, pady=10)
+# components to input cantonese
+l = Label(ws, textvariable=display_c_l, width=64, bg='#3D3D3D')
+e = Entry(ws, bg='black', width=64)
+t = Text(ws, height=4, width=54, font=("Helvetica", 16))
 
+b1 = Button(ws, text='Check', command=lambda: check_lyrics(e.get(), cn_l[N], en_l[N], t), width=200, bg='#616161', fg='white')
+b2 = Button(ws, text='Next', command=lambda: next_lyrics(display_c_l, cn_l, t, e), width=200, bg='#616161', fg='white')
 
-def back():
-    frame.grid_forget()
-    frame1 = LabelFrame(root, text='Such a dilemma', padx=25, pady=25)
-    frame1.pack(padx=10, pady=50)
+l.grid(column=0, row=0, columnspan=2, padx=10, pady=20)
+e.grid(column=0, row=1, columnspan=2, pady=10)
+e.focus_set()
+t.grid(column=0, row=2, columnspan=2, pady=10)
+b1.grid(column=0, row=3, padx=10, pady=10)
+b2.grid(column=1, row=3, padx=10, pady=10)
 
-    b = Button(frame1, text="Don't click!!!", fg='red', command=bad)
-    b2 = Button(frame1, text='Click!!!', fg='green', command=good)
+def next_lyrics(display_c_l, cn_l, t, e):
+    global N
 
-    b.grid(row=0, column=0, padx=3)
-    b2.grid(row=0, column=1, padx=3)
+    N += 1
+    print(N)
+    value = cn_l[N]
+    display_c_l.set(value)
 
-# Create the buttons and put them in the frame
-b = Button(frame, text="Don't click!!!", fg='red', command=bad)
-b2 = Button(frame, text='Click!!!', fg='green', command=good)
+    t.delete("1.0", "end")
+    e.delete(0, 'end')
 
-b.grid(row=0, column=0, padx=3)
-b2.grid(row=0, column=1, padx=3)
+def check_lyrics(input_l, cn_l, en_l, t):
+    global N
 
-root.mainloop()
+    cn_w = list(cn_l.replace(' ', ''))
+    en_l = en_l.split(' ')
+    colored_en_l = en_l.copy()
+    check_words = input_l.split(' ')
+
+    for w in range(len(check_words)):
+        if (check_words[w] != en_l[w]) and ('/' not in en_l[w] or check_words[w] not in en_l[w].split('/')):
+            check_words[w] = RED + check_words[w] + RESET
+            colored_en_l[w] = GREEN + en_l[w] + RESET
+
+    output_ls = ' '.join(check_words)    
+    correct_ls = ' '.join(colored_en_l)  
+
+    t.delete("1.0", "end")
+    t.insert('insert', correct_ls)
+
+ws.mainloop()
