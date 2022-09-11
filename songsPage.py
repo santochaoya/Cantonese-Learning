@@ -91,7 +91,7 @@ def lyricsPage(ws, ws1, lb):
     global SONG
 
     # Lyrics Page
-    ws3 = Toplevel(ws)
+    ws3 = Toplevel(ws1)
     ws3.title('Show Lyrics')
     center_window(ws3)
 
@@ -168,7 +168,7 @@ def gamePage(ws, ws1, lb):
     global N, SONG
 
     # Lyrics Page
-    ws2 = Toplevel(ws)
+    ws2 = Toplevel(ws1)
     ws2.title('Check Cantonese')
     center_window(ws2)
 
@@ -236,6 +236,13 @@ def gamePage(ws, ws1, lb):
 #  -- A Label to display comparison
 # ------------------------------------------------------------------
 
+def delete_item(lb):
+    selection = lb.curselection()
+    lb.delete(selection[0])
+
+def clear_items(lb):
+    lb.delete(0, END)
+
 def newWordsPage(ws):
  
     # Lyrics Page
@@ -249,7 +256,7 @@ def newWordsPage(ws):
     buttonframe = Frame(ws4)
 
     # Create components
-    new_w = lc.read_new_words(W_DIR)
+    new_w = dict(sorted(lc.read_new_words(W_DIR).items(), key=lambda item: item[1][1], reverse=True))
 
     # Return button
     def wordPage_2_songPage(ws):
@@ -258,8 +265,24 @@ def newWordsPage(ws):
     
     b = Button(returnframe, text='Back', command=lambda: wordPage_2_songPage(ws4), width=100, bg='#616161', fg='white')
 
+    # listbox
+    lb = Listbox(listframe, listvariable=SONG_LIST, borderwidth=0, bg='#3D3D3D', selectbackground='#2B57B7', activestyle='none', selectmode=SINGLE)
+    for i in new_w.items():
+        lb.insert('end', f'{i[0]}: {i[1][0]}')
+
+    # buttons
+    delete_button = Button(buttonframe, text='Delete', command=lambda: delete_item(lb), width=200, bg='#616161', fg='white')
+    clear_button = Button(buttonframe, text='Clear', command=lambda: clear_items(lb), width=200, bg='#616161', fg='white')
+
     returnframe.pack(side=TOP, anchor=NW)
     b.pack(padx=10)
+
+    listframe.pack(fill='both', expand=1)
+    lb.pack(fill='both', expand=1, padx=10, pady=20)
+
+    buttonframe.pack()
+    delete_button.pack(side=LEFT, padx=10, pady=5)
+    clear_button.pack(side=RIGHT, padx=10, pady=5)
 
     ws4.mainloop()
 
