@@ -12,17 +12,8 @@ from utils import *
 #   ** Mian/Select Songs, Main/New Words **
 # ------------------------------------------------------------------
 
-def mainPage():
-    ws = Tk()
-    ws.title('Learning Cantonese')
-    center_window(ws)
+def mainPage(ws, method='not delete'):
 
-    SONG_LIST = StringVar()
-    SONG = StringVar()
-    NUM_L = 0
-    W_DIR = 'data/new words.json'
-
-    
     # Create components
     menubar(ws, gamePage, newWordsPage)
     buttonframe = Frame(ws)
@@ -34,7 +25,8 @@ def mainPage():
     b1.pack(side=LEFT, padx=10, pady=5)
     b2.pack(side=RIGHT, padx=10, pady=5)
 
-
+    if method == 'delete':
+        buttonframe.destroy()
 
 # ------------------------------------------------------------------
 #  Select Song Page
@@ -56,20 +48,36 @@ def songPage(ws):
     ws1.title('Select Songs')
     center_window(ws1)
 
-    # Create a listbox
+    # Create components
+    returnframe = Frame(ws1)
+    listframe = Frame(ws1)
+    buttonframe = Frame(ws1)
+
+    def songPage_2_mainPage(ws):
+        ws1.destroy()
+        mainPage(ws, 'delete')
+    
+    b = Button(returnframe, text='Back', command=lambda: songPage_2_mainPage(ws), width=100, bg='#616161', fg='white')
+
     all_f = glob.glob('data/songs/*.txt')
     SONG_LIST = [x[11:-4] for x in all_f]
 
-    lb = Listbox(ws1, listvariable=SONG_LIST, width=50, height=20, borderwidth=0, bg='#3D3D3D', selectbackground='#2B57B7', activestyle='none', selectmode=SINGLE)
+    lb = Listbox(listframe, listvariable=SONG_LIST, borderwidth=0, bg='#3D3D3D', selectbackground='#2B57B7', activestyle='none', selectmode=SINGLE)
     for s in SONG_LIST:
         lb.insert('end', s)
 
-    b1 = Button(ws1, text='Play Cantonese', command=lambda: gamePage(ws, ws1, lb), width=200, bg='#616161', fg='white')
-    b2 = Button(ws1, text='Show Lyrics', command=lambda: lyricsPage(ws, ws1, lb), width=200, bg='#616161', fg='white')
+    b1 = Button(buttonframe, text='Play Cantonese', command=lambda: gamePage(ws, ws1, lb), width=200, bg='#616161', fg='white')
+    b2 = Button(buttonframe, text='Show Lyrics', command=lambda: lyricsPage(ws, ws1, lb), width=200, bg='#616161', fg='white')
 
-    lb.grid(column=0, row=0, columnspan=2, padx=75, pady=20)
-    b1.grid(column=0, row=1, padx=10, pady=10)
-    b2.grid(column=1, row=1, padx=10, pady=10)
+    returnframe.pack(side=TOP, anchor=NW)
+    b.pack(padx=10)
+
+    listframe.pack(fill='both', expand=1)
+    lb.pack(fill='both', expand=1, padx=10, pady=20)
+    
+    buttonframe.pack()
+    b1.pack(side=LEFT, padx=10, pady=5)
+    b2.pack(side=RIGHT, padx=10, pady=5)
 
     ws1.mainloop()
 
@@ -80,7 +88,6 @@ def songPage(ws):
 
 
 def lyricsPage(ws, ws1, lb):
-    
     global SONG
 
     # Lyrics Page
@@ -91,22 +98,28 @@ def lyricsPage(ws, ws1, lb):
     get_song(lb)
     ws1.destroy()
 
-    # Create a text
+    # Create components
+    returnframe = Frame(ws3)
+    frame = Frame(ws3)
+
     lyric_dir = f'data/songs/{SONG.get()}.txt'
 
-    t = Text(ws3, bg='#3D3D3D', width=82, height=28)
-    t.insert('1.0', lc.show_lyrics(lyric_dir))
-    t.configure(state='disabled')
-
-    # Return button
-    def back_songPage(ws):
+    def lyricsPage_2_songPage(ws):
         ws3.destroy()
         songPage(ws)
     
-    b = Button(ws3, text='Back', command=lambda: back_songPage(ws), width=200, bg='#616161', fg='white')
+    b = Button(returnframe, text='Back', command=lambda: lyricsPage_2_songPage(ws), width=100, bg='#616161', fg='white')
 
-    t.grid(column=0, row=0, padx=10, pady=20)
-    b.grid(column=0, row=1, pady=10)
+    t = Text(frame, bg='#3D3D3D', font=("arial", 14))
+    t.insert('1.0', lc.show_lyrics(lyric_dir))
+    t.configure(state='disabled')
+
+    # Show components on screen
+    returnframe.pack(side=TOP, anchor=NW)
+    frame.pack(fill='both', expand=1, padx=10)
+
+    b.pack(side=TOP, anchor=NW)
+    t.pack(expand=1, padx=10, pady=5)
 
     ws3.mainloop()
 
@@ -152,7 +165,7 @@ def check_lyrics(input_l, cn_l, en_l, w_dir, t, t2):
             t.insert(END, f'{en_l[w]}  ')
 
 def gamePage(ws, ws1, lb):
-    global NUM_L, SONG
+    global N, SONG
 
     # Lyrics Page
     ws2 = Toplevel(ws)
@@ -172,6 +185,7 @@ def gamePage(ws, ws1, lb):
     display_c_l.set(cn_l[N])
 
     # components to input cantonese
+    returnframe = Frame(ws2)
     frame = Frame(ws2)
 
     l = Label(frame, textvariable=display_c_l, bg='#323232', font=("arial", 14), height=2)
@@ -182,6 +196,16 @@ def gamePage(ws, ws1, lb):
     t = Text(frame, height=2, font=("arial", 14))
     t.tag_config('warning', foreground='#A6FF2E')
     
+    # Return button
+    def gamePage_2_songPage(ws):
+        ws2.destroy()
+        songPage(ws)
+
+    back_b = Button(returnframe, text='Back', command=lambda: gamePage_2_songPage(ws), width=100, bg='#616161', fg='white')
+ 
+    returnframe.pack(side=TOP, anchor=NW)
+    back_b.pack(padx=10)
+
     buttonframe = Frame(ws2)
     b1 = Button(buttonframe, text='Check', command=lambda: check_lyrics(e.get(), cn_l[N], en_l[N], W_DIR, t, t2), bg='#616161', fg='white', width=200)
     b2 = Button(buttonframe, text='Next', command=lambda: next_lyrics(display_c_l, cn_l, t, e), bg='#616161', fg='white', width=200)
@@ -213,7 +237,7 @@ def gamePage(ws, ws1, lb):
 # ------------------------------------------------------------------
 
 def newWordsPage(ws):
-
+ 
     # Lyrics Page
     ws4 = Toplevel(ws)
     ws4.title('New Words')
@@ -224,27 +248,18 @@ def newWordsPage(ws):
     listframe = Frame(ws4)
     buttonframe = Frame(ws4)
 
-    # Create a listbox
+    # Create components
     new_w = lc.read_new_words(W_DIR)
-    print(new_w)
-  
-    lb = Listbox(listframe, listvariable=SONG_LIST, width=50, height=20, borderwidth=0, bg='#3D3D3D', selectbackground='#2B57B7', activestyle='none', selectmode=SINGLE)
-    for s in SONG_LIST:
-        lb.insert('end', s)
-
 
     # Return button
-    def back_songPage(ws):
+    def wordPage_2_songPage(ws):
         ws4.destroy()
-        songPage(ws)
+        mainPage(ws, 'delete')
     
-    b = Button(returnframe, text='Back', command=lambda: back_songPage(ws4), width=100, bg='#616161', fg='white')
+    b = Button(returnframe, text='Back', command=lambda: wordPage_2_songPage(ws4), width=100, bg='#616161', fg='white')
 
     returnframe.pack(side=TOP, anchor=NW)
     b.pack(padx=10)
-
-    textframe.pack()
-    t.pack(expand=1)
 
     ws4.mainloop()
 
@@ -264,16 +279,6 @@ if __name__ == '__main__':
     NUM_L = 0
     W_DIR = 'data/new words.json'
 
-    
-    # Create components
-    menubar(ws, gamePage, newWordsPage)
-    buttonframe = Frame(ws)
-
-    b1 = Button(buttonframe, text='Select Songs', command=lambda: songPage(ws), width=200, bg='#616161', fg='white')
-    b2 = Button(buttonframe, text='Learn New Words', command=lambda: newWordsPage(ws), width=200, bg='#616161', fg='white')
-    
-    buttonframe.pack(expand=1)
-    b1.pack(side=LEFT, padx=10, pady=5)
-    b2.pack(side=RIGHT, padx=10, pady=5)
+    mainPage(ws)
 
     ws.mainloop()

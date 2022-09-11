@@ -31,7 +31,7 @@ t = Text(frame, height=2, font=("arial", 14))
 t.tag_config('warning', foreground='#A6FF2E')
  
 buttonframe = Frame(ws)
-b1 = Button(buttonframe, text='Check', command=lambda: check_lyrics(e.get(), cn_l[N], en_l[N], W_DIR, t), bg='#616161', fg='white', width=200)
+b1 = Button(buttonframe, text='Check', command=lambda: check_lyrics(e.get(), cn_l[N], en_l[N], W_DIR, t, t2), bg='#616161', fg='white', width=200)
 b2 = Button(buttonframe, text='Next', command=lambda: next_lyrics(display_c_l, cn_l, t, e), bg='#616161', fg='white', width=200)
 
 frame2 = Frame(ws)
@@ -85,6 +85,6 @@ def check_lyrics(input_l, cn_l, en_l, w_dir, t, t2):
             t2.insert(END, f'{en_l[w]}\t', 'warning')
 
         else:
-            t.insert(END, f'{en_l[w]}  ')
+            t.insert(END, f'{en_l[w]}\t')
 
 ws.mainloop()
