@@ -12,7 +12,13 @@ from utils import *
 #   ** Mian/Select Songs, Main/New Words **
 # ------------------------------------------------------------------
 
-def mainPage(ws, method='not delete'):
+def mainPage(old_ws):
+    
+    old_ws.destroy()
+
+    ws = Tk()
+    ws.title('Learning Cantonese')
+    center_window(ws)
 
     # Create components
     menubar(ws, gamePage, newWordsPage)
@@ -25,8 +31,7 @@ def mainPage(ws, method='not delete'):
     b1.pack(side=LEFT, padx=10, pady=5)
     b2.pack(side=RIGHT, padx=10, pady=5)
 
-    if method == 'delete':
-        buttonframe.destroy()
+    ws.mainloop()
 
 # ------------------------------------------------------------------
 #  Select Song Page
@@ -55,7 +60,7 @@ def songPage(ws):
 
     def songPage_2_mainPage(ws):
         ws1.destroy()
-        mainPage(ws, 'delete')
+        mainPage(ws)
     
     b = Button(returnframe, text='Back', command=lambda: songPage_2_mainPage(ws), width=100, bg='#616161', fg='white')
 
@@ -91,7 +96,7 @@ def lyricsPage(ws, ws1, lb):
     global SONG
 
     # Lyrics Page
-    ws3 = Toplevel(ws1)
+    ws3 = Toplevel(ws)
     ws3.title('Show Lyrics')
     center_window(ws3)
 
@@ -168,7 +173,7 @@ def gamePage(ws, ws1, lb):
     global N, SONG
 
     # Lyrics Page
-    ws2 = Toplevel(ws1)
+    ws2 = Toplevel(ws)
     ws2.title('Check Cantonese')
     center_window(ws2)
 
@@ -259,11 +264,11 @@ def newWordsPage(ws):
     new_w = dict(sorted(lc.read_new_words(W_DIR).items(), key=lambda item: item[1][1], reverse=True))
 
     # Return button
-    def wordPage_2_songPage(ws):
+    def wordPage_2_mainPage(ws):
         ws4.destroy()
-        mainPage(ws, 'delete')
+        mainPage(ws)
     
-    b = Button(returnframe, text='Back', command=lambda: wordPage_2_songPage(ws4), width=100, bg='#616161', fg='white')
+    b = Button(returnframe, text='Back', command=lambda: wordPage_2_mainPage(ws), width=100, bg='#616161', fg='white')
 
     # listbox
     lb = Listbox(listframe, listvariable=SONG_LIST, borderwidth=0, bg='#3D3D3D', selectbackground='#2B57B7', activestyle='none', selectmode=SINGLE)
@@ -302,6 +307,15 @@ if __name__ == '__main__':
     NUM_L = 0
     W_DIR = 'data/new words.json'
 
-    mainPage(ws)
+    # Create components
+    menubar(ws, gamePage, newWordsPage)
+    buttonframe = Frame(ws)
+
+    b1 = Button(buttonframe, text='Select Songs', command=lambda: songPage(ws), width=200, bg='#616161', fg='white')
+    b2 = Button(buttonframe, text='Learn New Words', command=lambda: newWordsPage(ws), width=200, bg='#616161', fg='white')
+    
+    buttonframe.pack(expand=1)
+    b1.pack(side=LEFT, padx=10, pady=5)
+    b2.pack(side=RIGHT, padx=10, pady=5)
 
     ws.mainloop()
