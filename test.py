@@ -26,9 +26,10 @@ e = Entry(ws, bg='black')
 e.focus_set()
 
 t = Text(ws, height=2, font=("Helvetica", 14))
-t.tag_config('warning', foreground='green')
+t.tag_config('warning', foreground='#A6FF2E')
 
 t2 = Text(ws, font=("Helvetica", 14))
+t2.tag_config('warning', foreground='#A6FF2E')
 
 b1 = Button(ws, text='Check', command=lambda: check_lyrics(e.get(), cn_l[N], en_l[N], W_DIR, t), bg='#616161', fg='white')
 b2 = Button(ws, text='Next', command=lambda: next_lyrics(display_c_l, cn_l, t, e), bg='#616161', fg='white')
@@ -51,8 +52,8 @@ def next_lyrics(display_c_l, cn_l, t, e):
     value = cn_l[N]
     display_c_l.set(value)
 
-    t.delete("1.0", "end")
-    e.delete(0, 'end')
+    t.delete("1.0", END)
+    e.delete(0, END)
     e.focus_set()
 
 def check_lyrics(input_l, cn_l, en_l, w_dir, t):
@@ -65,16 +66,17 @@ def check_lyrics(input_l, cn_l, en_l, w_dir, t):
 
     for w in range(len(check_words)):
         if (check_words[w] != en_l[w]) and ('/' not in en_l[w] or check_words[w] not in en_l[w].split('/')):
-            t.insert('insert', en_l[w], 'warning')
-            t.insert('insert', '  ')
+            t.insert(END, en_l[w], 'warning')
+            t.insert(END, '  ')
 
             # add to word book
             lc.add_new_words(new_w, cn_w[w], en_l[w])
             lc.output_new_words(w_dir, new_w)
 
-            t2.insert('end', f'{cn_w[w]}: {en_l[w]}\n')
+            t2.insert(END, f'{cn_w[w]}: ')
+            t2.insert(END, f'{en_l[w]}\n', 'warning')
 
         else:
-            t.insert('insert', f'{en_l[w]}  ')
+            t.insert(END, f'{en_l[w]}  ')
 
 ws.mainloop()
