@@ -221,13 +221,16 @@ def newWordsPage(ws):
 
     # Frames
     returnframe = Frame(ws4)
-    textframe = Frame(ws4)
+    listframe = Frame(ws4)
     buttonframe = Frame(ws4)
 
-    # Create a text
+    # Create a listbox
     new_w = lc.read_new_words(W_DIR)
     print(new_w)
-    t = Text(textframe, bg='#3D3D3D', width=82, height=28)
+  
+    lb = Listbox(listframe, listvariable=SONG_LIST, width=50, height=20, borderwidth=0, bg='#3D3D3D', selectbackground='#2B57B7', activestyle='none', selectmode=SINGLE)
+    for s in SONG_LIST:
+        lb.insert('end', s)
 
 
     # Return button
