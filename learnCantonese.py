@@ -74,6 +74,8 @@ def add_new_words(new_w, cn_w, en_w):
 def output_new_words(w_dir, new_w):
     """output new words to file
     """
+    print('test test test')
+
     with open(w_dir, 'w') as f:
         json.dump(new_w, f, indent=4, ensure_ascii=False)
     f.close()

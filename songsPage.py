@@ -241,12 +241,21 @@ def gamePage(ws, ws1, lb):
 #  -- A Label to display comparison
 # ------------------------------------------------------------------
 
-def delete_item(lb):
+def delete_item(lb, w_dir, new_w):
     selection = lb.curselection()
     lb.delete(selection[0])
 
-def clear_items(lb):
+    if len(selection) > 0:
+        new_w.pop(list(new_w)[selection[0]])
+
+    lc.output_new_words(w_dir, new_w)
+
+
+def clear_items(lb, w_dir, new_w):
     lb.delete(0, END)
+    new_w = {}
+    lc.output_new_words(w_dir, new_w)
+
 
 def newWordsPage(ws):
  
@@ -267,7 +276,7 @@ def newWordsPage(ws):
     def wordPage_2_mainPage(ws):
         ws4.destroy()
         mainPage(ws)
-    
+
     b = Button(returnframe, text='Back', command=lambda: wordPage_2_mainPage(ws), width=100, bg='#616161', fg='white')
 
     # listbox
@@ -276,8 +285,8 @@ def newWordsPage(ws):
         lb.insert('end', f'{i[0]}: {i[1][0]}')
 
     # buttons
-    delete_button = Button(buttonframe, text='Delete', command=lambda: delete_item(lb), width=200, bg='#616161', fg='white')
-    clear_button = Button(buttonframe, text='Clear', command=lambda: clear_items(lb), width=200, bg='#616161', fg='white')
+    delete_button = Button(buttonframe, text='Delete', command=lambda: delete_item(lb, W_DIR, new_w), width=200, bg='#616161', fg='white')
+    clear_button = Button(buttonframe, text='Clear', command=lambda: clear_items(lb, W_DIR, new_w), width=200, bg='#616161', fg='white')
 
     returnframe.pack(side=TOP, anchor=NW)
     b.pack(padx=10)
