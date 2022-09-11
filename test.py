@@ -20,30 +20,38 @@ display_c_l = StringVar()
 display_c_l.set(cn_l[N])
 
 # components to input cantonese
-l = Label(ws, textvariable=display_c_l, bg='#252525', font=("Helvetica", 14), height=2)
+frame = Frame(ws)
 
-e = Entry(ws, bg='black')
+l = Label(frame, textvariable=display_c_l, bg='#323232', font=("arial", 14), height=2)
+
+e = Entry(frame, bg='black')
 e.focus_set()
 
-t = Text(ws, height=2, font=("Helvetica", 14))
+t = Text(frame, height=2, font=("arial", 14))
 t.tag_config('warning', foreground='#A6FF2E')
+ 
+buttonframe = Frame(ws)
+b1 = Button(buttonframe, text='Check', command=lambda: check_lyrics(e.get(), cn_l[N], en_l[N], W_DIR, t), bg='#616161', fg='white', width=200)
+b2 = Button(buttonframe, text='Next', command=lambda: next_lyrics(display_c_l, cn_l, t, e), bg='#616161', fg='white', width=200)
 
-t2 = Text(ws, font=("Helvetica", 14))
+frame2 = Frame(ws)
+t2 = Text(frame2, font=("Helvetica", 14))
 t2.tag_config('warning', foreground='#A6FF2E')
 
-b1 = Button(ws, text='Check', command=lambda: check_lyrics(e.get(), cn_l[N], en_l[N], W_DIR, t), bg='#616161', fg='white')
-b2 = Button(ws, text='Next', command=lambda: next_lyrics(display_c_l, cn_l, t, e), bg='#616161', fg='white')
 
-# Show components on screen
-l.grid(column=0, row=0, columnspan=2, sticky='nsew', padx=10, pady=10)
-e.grid(column=0, row=1, columnspan=2, sticky='nsew', padx=10, pady=10)
+# show components on screen
+frame.pack()
 
-t.grid(column=0, row=2, columnspan=2, sticky='nsew', padx=10, pady=10)
+l.pack(fill='x', padx=10, pady=5)
+e.pack(fill='x', padx=10, pady=5)
+t.pack(fill='x', padx=10, pady=5)
 
-b1.grid(column=0, row=3, sticky='w', padx=10, pady=10)
-b2.grid(column=1, row=3, sticky='e', padx=10, pady=10)
+buttonframe.pack()
+b1.pack(side=LEFT, padx=10, pady=5)
+b2.pack(side=RIGHT, padx=10, pady=5)
 
-t2.grid(column=0, row=4, columnspan=2, sticky='nsew', padx=10, pady=10)
+frame2.pack()
+t2.pack(fill='x', padx=10, pady=5)
 
 def next_lyrics(display_c_l, cn_l, t, e):
     global N
@@ -56,7 +64,7 @@ def next_lyrics(display_c_l, cn_l, t, e):
     e.delete(0, END)
     e.focus_set()
 
-def check_lyrics(input_l, cn_l, en_l, w_dir, t):
+def check_lyrics(input_l, cn_l, en_l, w_dir, t, t2):
     global N
 
     cn_w = list(cn_l.replace(' ', ''))
@@ -74,7 +82,7 @@ def check_lyrics(input_l, cn_l, en_l, w_dir, t):
             lc.output_new_words(w_dir, new_w)
 
             t2.insert(END, f'{cn_w[w]}: ')
-            t2.insert(END, f'{en_l[w]}\n', 'warning')
+            t2.insert(END, f'{en_l[w]}\t', 'warning')
 
         else:
             t.insert(END, f'{en_l[w]}  ')
