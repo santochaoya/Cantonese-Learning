@@ -21,7 +21,7 @@ def center_window(window):
     window.geometry(f'{ws_width}x{ws_height}+{center_x}+{center_y}')
 
     # prohibit resizing
-    window.resizable(False, False)
+    window.resizable(True, True)
 
     # Add window icon
     window.iconbitmap('assets/windowIcon.icns')
