@@ -163,8 +163,9 @@ def check_lyrics(input_l, cn_l, en_l, w_dir, t, t2):
             lc.add_new_words(new_w, cn_w[w], en_l[w])
             lc.output_new_words(w_dir, new_w)
 
-            t2.insert(END, f'{cn_w[w]}: ')
-            t2.insert(END, f'{en_l[w]}\t', 'warning')
+            if not cn_w[w] in t2.get("1.0", "end"):
+                t2.insert(END, f'{cn_w[w]}: ')
+                t2.insert(END, f'{en_l[w]}\t', 'warning')
 
         else:
             t.insert(END, f'{en_l[w]}  ')
@@ -219,7 +220,6 @@ def gamePage(ws, ws1, lb):
     t2 = Text(frame2, font=("Helvetica", 14))
     t2.tag_config('warning', foreground='#A6FF2E')
 
-
     # show components on screen
     frame.pack()
 
@@ -233,6 +233,10 @@ def gamePage(ws, ws1, lb):
 
     frame2.pack()
     t2.pack(fill='x', padx=10, pady=5)
+
+    ws2.bind('<Return>', lambda event: check_lyrics(e.get(), cn_l[N], en_l[N], W_DIR, t, t2))
+    ws2.bind('<Right>', lambda event: next_lyrics(display_c_l, cn_l, t, e))
+    ws2.mainloop()
 
 # ------------------------------------------------------------------
 #  New Words Page
