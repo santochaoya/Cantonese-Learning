@@ -146,6 +146,17 @@ def next_lyrics(display_c_l, cn_l, t, e):
     e.delete(0, END)
     e.focus_set()
 
+def previous_lyrics(display_c_l, cn_l, t, e):
+    global N
+
+    N -= 1
+    value = cn_l[N]
+    display_c_l.set(value)
+
+    t.delete("1.0", END)
+    e.delete(0, END)
+    e.focus_set()
+
 def check_lyrics(input_l, cn_l, en_l, w_dir, t, t2):
     global N
 
@@ -214,7 +225,8 @@ def gamePage(ws, ws1, lb):
 
     buttonframe = Frame(ws2)
     b1 = Button(buttonframe, text='Check', command=lambda: check_lyrics(e.get(), cn_l[N], en_l[N], W_DIR, t, t2), bg='#616161', fg='white', width=200)
-    b2 = Button(buttonframe, text='Next', command=lambda: next_lyrics(display_c_l, cn_l, t, e), bg='#616161', fg='white', width=200)
+    b2 = Button(buttonframe, text='->', command=lambda: next_lyrics(display_c_l, cn_l, t, e), bg='#616161', fg='white', width=100)
+    b3 = Button(buttonframe, text='<-', command=lambda: previous_lyrics(display_c_l, cn_l, t, e), bg='#616161', fg='white', width=100)
 
     frame2 = Frame(ws2)
     t2 = Text(frame2, font=("Helvetica", 14))
@@ -228,14 +240,17 @@ def gamePage(ws, ws1, lb):
     t.pack(fill='x', padx=10, pady=5)
 
     buttonframe.pack()
-    b1.pack(side=LEFT, padx=10, pady=5)
-    b2.pack(side=RIGHT, padx=10, pady=5)
-
+    b3.pack(padx=10, pady=5, side=LEFT)
+    b1.pack(padx=10, pady=5, side=LEFT)
+    b2.pack(padx=10, pady=5, side=LEFT)
+    
     frame2.pack()
     t2.pack(fill='x', padx=10, pady=5)
 
     ws2.bind('<Return>', lambda event: check_lyrics(e.get(), cn_l[N], en_l[N], W_DIR, t, t2))
     ws2.bind('<Right>', lambda event: next_lyrics(display_c_l, cn_l, t, e))
+    ws2.bind('<Left>', lambda event: previous_lyrics(display_c_l, cn_l, t, e))
+
     ws2.mainloop()
 
 # ------------------------------------------------------------------
