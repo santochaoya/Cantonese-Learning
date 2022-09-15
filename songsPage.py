@@ -3,9 +3,11 @@ from tkinter import *
 from tkmacosx import Button
 import glob
 import os
+import re
 
 import learnCantonese as lc
 from utils import *
+
 
 # ------------------------------------------------------------------
 #  Main Page
@@ -161,8 +163,8 @@ def check_lyrics(input_l, cn_l, en_l, w_dir, t, t2):
     global N
 
     cn_w = list(cn_l.replace(' ', ''))
-    en_l = en_l.split(' ')
-    check_words = input_l.split(' ')
+    en_l = re.sub('\s+',' ', en_l).lstrip().split(' ')
+    check_words = re.sub('\s+',' ', input_l).lstrip().split(' ')
     new_w = lc.read_new_words(w_dir)
 
     for w in range(len(check_words)):
@@ -296,6 +298,10 @@ def sort_by_adding(lb):
     for i in new_w.items():
         lb.insert('end', f'{i[0]}: {i[1][0]}')
 
+def highlight_item(lb):
+    lb.itemconfig(lb.curselection()[0], {'fg': 'light green'})
+    
+
 def newWordsPage(ws):
  
     # Lyrics Page
@@ -325,18 +331,20 @@ def newWordsPage(ws):
     b_sort2 = Button(topbuttonframe, text='Sort by Adding', command=lambda: sort_by_adding(lb), width=150, bg='#616161', fg='white')
 
     # buttons
-    delete_button = Button(buttonframe, text='Delete', command=lambda: delete_item(lb, W_DIR, new_w), width=200, bg='#616161', fg='white')
-    clear_button = Button(buttonframe, text='Clear', command=lambda: clear_items(lb, W_DIR, new_w), width=200, bg='#616161', fg='white')
+    highlight_button = Button(buttonframe, text='Highlight', command=lambda: highlight_item(lb), width=150, bg='#616161', fg='white')
+    delete_button = Button(buttonframe, text='Delete', command=lambda: delete_item(lb, W_DIR, new_w), width=150, bg='#616161', fg='white')
+    clear_button = Button(buttonframe, text='Clear', command=lambda: clear_items(lb, W_DIR, new_w), width=150, bg='#616161', fg='white')
 
     topbuttonframe.pack(side=TOP, anchor=NW)
     b.pack(side=LEFT, padx=10, pady=5)
-    b_sort1.pack(side=LEFT, padx=10, pady=5)
-    b_sort2.pack(side=LEFT, padx=10, pady=5)
+    b_sort1.pack(side=RIGHT, padx=10, pady=5)
+    b_sort2.pack(side=RIGHT, padx=10, pady=5)
 
     listframe.pack(fill='both', expand=1)
     lb.pack(fill='both', expand=1, padx=10, pady=20)
 
     buttonframe.pack()
+    highlight_button.pack(side=LEFT, padx=10, pady=5)
     delete_button.pack(side=LEFT, padx=10, pady=5)
     clear_button.pack(side=RIGHT, padx=10, pady=5)
 

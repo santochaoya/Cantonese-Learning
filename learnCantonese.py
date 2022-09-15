@@ -69,7 +69,7 @@ def add_new_words(new_w, cn_w, en_w):
     if cn_w in new_w:
         new_w[cn_w][1] += 1
     else:
-        new_w[cn_w] = [en_w, 1]
+        new_w[cn_w] = [en_w, 1, 0]
 
 def output_new_words(w_dir, new_w):
     """output new words to file
