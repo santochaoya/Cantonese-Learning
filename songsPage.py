@@ -158,30 +158,36 @@ def previous_lyrics(display_c_l, cn_l, t, e):
     t.delete("1.0", END)
     e.delete(0, END)
     e.focus_set()
-
 def check_lyrics(input_l, cn_l, en_l, w_dir, t, t2):
     global N
 
-    cn_w = list(cn_l.replace(' ', ''))
-    en_l = re.sub('\s+',' ', en_l).lstrip().split(' ')
-    check_words = re.sub('\s+',' ', input_l).lstrip().split(' ')
-    new_w = lc.read_new_words(w_dir)
+    if (len(input_l) == 0) and (t.get('1.0', END) == '\n'):
+        t.insert(END, 'There is no input')
 
-    for w in range(len(check_words)):
-        if (check_words[w] != en_l[w]) and ('/' not in en_l[w] or check_words[w] not in en_l[w].split('/')):
-            t.insert(END, en_l[w], 'warning')
-            t.insert(END, '  ')
+    elif t.get('1.0', END) in ['There is no input\n', '\n']:
+        t.delete('1.0', END)
 
-            # add to word book
-            lc.add_new_words(new_w, cn_w[w], en_l[w])
-            lc.output_new_words(w_dir, new_w)
+        cn_w = list(cn_l.replace(' ', ''))
+        en_l = re.sub('\s+',' ', en_l).lstrip().split(' ')
+        check_words = re.sub('\s+',' ', input_l).lstrip().split(' ')
+        new_w = lc.read_new_words(w_dir)
 
-            if cn_w[w] not in t2.get("1.0", "end"):
-                t2.insert(END, f'{cn_w[w]}: ')
-                t2.insert(END, f'{en_l[w]}\t', 'warning')
+        for w in range(len(check_words)):
+            if (check_words[w] != en_l[w]) and ('/' not in en_l[w] or check_words[w] not in en_l[w].split('/')):
+                t.insert(END, en_l[w], 'warning')
+                t.insert(END, '  ')
 
-        else:
-            t.insert(END, f'{en_l[w]}  ')
+                # add to word book
+                lc.add_new_words(new_w, cn_w[w], en_l[w])
+                lc.output_new_words(w_dir, new_w)
+
+                if cn_w[w] not in t2.get("1.0", "end"):
+                    t2.insert(END, f'{cn_w[w]}: ')
+                    t2.insert(END, f'{en_l[w]}\t', 'warning')
+
+            else:
+                t.insert(END, f'{en_l[w]}  ')
+
 
 def gamePage(ws, ws1, lb):
     global N, SONG
