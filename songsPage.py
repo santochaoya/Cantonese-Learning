@@ -277,12 +277,24 @@ def delete_item(lb, w_dir, new_w):
 
     lc.output_new_words(w_dir, new_w)
 
-
 def clear_items(lb, w_dir, new_w):
     lb.delete(0, END)
     new_w = {}
     lc.output_new_words(w_dir, new_w)
 
+def sort_by_amount(lb):
+    new_w = dict(sorted(lc.read_new_words(W_DIR).items(), key=lambda item: item[1][1], reverse=True))
+    
+    lb.delete(0, END)
+    for i in new_w.items():
+        lb.insert('end', f'{i[0]}: {i[1][0]}')
+
+def sort_by_adding(lb):
+    new_w = dict(lc.read_new_words(W_DIR).items())
+    
+    lb.delete(0, END)
+    for i in new_w.items():
+        lb.insert('end', f'{i[0]}: {i[1][0]}')
 
 def newWordsPage(ws):
  
@@ -301,18 +313,7 @@ def newWordsPage(ws):
         ws4.destroy()
         mainPage(ws)
     
-    # Sort buttons
-    def sort_by_amount():
-        new_w = dict(sorted(lc.read_new_words(W_DIR).items(), key=lambda item: item[1][1], reverse=True))
-
-
-    def sort_by_adding():
-        new_w = dict(lc.read_new_words(W_DIR).items())
-
-    
-    b = Button(topbuttonframe, text='Back', command=lambda: wordPage_2_mainPage(ws), width=100, bg='#616161', fg='white')
-    b_sort1 = Button(topbuttonframe, text='Sort by Amount', command=sort_by_amount, width=100, bg='#616161', fg='white')
-    b_sort2 = Button(topbuttonframe, text='Sort by Adding', command=sort_by_adding, width=100, bg='#616161', fg='white')
+    b = Button(topbuttonframe, text='Back', command=lambda: wordPage_2_mainPage(ws), width=150, bg='#616161', fg='white')
 
     # listbox
     new_w = dict(lc.read_new_words(W_DIR).items())
@@ -320,12 +321,17 @@ def newWordsPage(ws):
     for i in new_w.items():
         lb.insert('end', f'{i[0]}: {i[1][0]}')
 
+    b_sort1 = Button(topbuttonframe, text='Sort by Amount', command=lambda: sort_by_amount(lb), width=150, bg='#616161', fg='white')
+    b_sort2 = Button(topbuttonframe, text='Sort by Adding', command=lambda: sort_by_adding(lb), width=150, bg='#616161', fg='white')
+
     # buttons
     delete_button = Button(buttonframe, text='Delete', command=lambda: delete_item(lb, W_DIR, new_w), width=200, bg='#616161', fg='white')
     clear_button = Button(buttonframe, text='Clear', command=lambda: clear_items(lb, W_DIR, new_w), width=200, bg='#616161', fg='white')
 
     topbuttonframe.pack(side=TOP, anchor=NW)
-    b.pack(padx=10)
+    b.pack(side=LEFT, padx=10, pady=5)
+    b_sort1.pack(side=LEFT, padx=10, pady=5)
+    b_sort2.pack(side=LEFT, padx=10, pady=5)
 
     listframe.pack(fill='both', expand=1)
     lb.pack(fill='both', expand=1, padx=10, pady=20)
