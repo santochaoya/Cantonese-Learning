@@ -174,7 +174,7 @@ def check_lyrics(input_l, cn_l, en_l, w_dir, t, t2):
             lc.add_new_words(new_w, cn_w[w], en_l[w])
             lc.output_new_words(w_dir, new_w)
 
-            if not cn_w[w] in t2.get("1.0", "end"):
+            if cn_w[w] not in t2.get("1.0", "end"):
                 t2.insert(END, f'{cn_w[w]}: ')
                 t2.insert(END, f'{en_l[w]}\t', 'warning')
 
@@ -210,6 +210,13 @@ def gamePage(ws, ws1, lb):
     e = Entry(frame, bg='black')
     e.focus_set()
 
+    def clear_entry():
+        e.delete(0, 'end')
+        e.focus_set()
+
+    clear_b = Button(frame, text='x', command=lambda:clear_entry(), width=20, height=20, bg='#616161', fg='white')
+    
+    # textframe = Frame(ws2)
     t = Text(frame, height=2, font=("arial", 14))
     t.tag_config('warning', foreground='#A6FF2E')
     
@@ -237,7 +244,8 @@ def gamePage(ws, ws1, lb):
 
     l.pack(fill='x', padx=10, pady=5)
     e.pack(fill='x', padx=10, pady=5)
-    t.pack(fill='x', padx=10, pady=5)
+    # clear_b.pack(padx=10, pady=5)
+    t.pack(fill='x', expand=True, padx=10, pady=5)
 
     buttonframe.pack()
     b3.pack(padx=10, pady=5, side=LEFT)
@@ -284,21 +292,30 @@ def newWordsPage(ws):
     center_window(ws4)
 
     # Frames
-    returnframe = Frame(ws4)
+    topbuttonframe = Frame(ws4)
     listframe = Frame(ws4)
     buttonframe = Frame(ws4)
-
-    # Create components
-    new_w = dict(sorted(lc.read_new_words(W_DIR).items(), key=lambda item: item[1][1], reverse=True))
-
+    
     # Return button
     def wordPage_2_mainPage(ws):
         ws4.destroy()
         mainPage(ws)
+    
+    # Sort buttons
+    def sort_by_amount():
+        new_w = dict(sorted(lc.read_new_words(W_DIR).items(), key=lambda item: item[1][1], reverse=True))
 
-    b = Button(returnframe, text='Back', command=lambda: wordPage_2_mainPage(ws), width=100, bg='#616161', fg='white')
+
+    def sort_by_adding():
+        new_w = dict(lc.read_new_words(W_DIR).items())
+
+    
+    b = Button(topbuttonframe, text='Back', command=lambda: wordPage_2_mainPage(ws), width=100, bg='#616161', fg='white')
+    b_sort1 = Button(topbuttonframe, text='Sort by Amount', command=sort_by_amount, width=100, bg='#616161', fg='white')
+    b_sort2 = Button(topbuttonframe, text='Sort by Adding', command=sort_by_adding, width=100, bg='#616161', fg='white')
 
     # listbox
+    new_w = dict(lc.read_new_words(W_DIR).items())
     lb = Listbox(listframe, listvariable=SONG_LIST, borderwidth=0, bg='#3D3D3D', selectbackground='#2B57B7', activestyle='none', selectmode=SINGLE)
     for i in new_w.items():
         lb.insert('end', f'{i[0]}: {i[1][0]}')
@@ -307,7 +324,7 @@ def newWordsPage(ws):
     delete_button = Button(buttonframe, text='Delete', command=lambda: delete_item(lb, W_DIR, new_w), width=200, bg='#616161', fg='white')
     clear_button = Button(buttonframe, text='Clear', command=lambda: clear_items(lb, W_DIR, new_w), width=200, bg='#616161', fg='white')
 
-    returnframe.pack(side=TOP, anchor=NW)
+    topbuttonframe.pack(side=TOP, anchor=NW)
     b.pack(padx=10)
 
     listframe.pack(fill='both', expand=1)
