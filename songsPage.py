@@ -284,23 +284,37 @@ def clear_items(lb, w_dir, new_w):
     new_w = {}
     lc.output_new_words(w_dir, new_w)
 
+def insert_color_item(lb, new_w):
+    for i in new_w.items():
+        lb.insert('end', f'{i[0]}: {i[1][0]}')
+        if i[1][-1] == 1:
+            lb.itemconfig("end", {'fg': 'light green'})
+
 def sort_by_amount(lb):
     new_w = dict(sorted(lc.read_new_words(W_DIR).items(), key=lambda item: item[1][1], reverse=True))
     
     lb.delete(0, END)
-    for i in new_w.items():
-        lb.insert('end', f'{i[0]}: {i[1][0]}')
+    insert_color_item(lb, new_w)
 
 def sort_by_adding(lb):
     new_w = dict(lc.read_new_words(W_DIR).items())
     
     lb.delete(0, END)
-    for i in new_w.items():
-        lb.insert('end', f'{i[0]}: {i[1][0]}')
+    insert_color_item(lb, new_w)
 
-def highlight_item(lb):
-    lb.itemconfig(lb.curselection()[0], {'fg': 'light green'})
-    
+def highlight_item(new_w, lb):
+    selection = StringVar()
+
+    value = lb.get(lb.curselection())
+    selection.set(value)
+    if new_w[value.split(':')[0]][-1] == 0:
+        lb.itemconfig(lb.curselection()[0], {'fg': 'light green'})
+        new_w[value.split(':')[0]][-1] = 1
+    else:
+        lb.itemconfig(lb.curselection()[0], {'fg': 'white'})
+        new_w[value.split(':')[0]][-1] = 0
+
+    lc.output_new_words(W_DIR, new_w)
 
 def newWordsPage(ws):
  
@@ -324,14 +338,13 @@ def newWordsPage(ws):
     # listbox
     new_w = dict(lc.read_new_words(W_DIR).items())
     lb = Listbox(listframe, listvariable=SONG_LIST, borderwidth=0, bg='#3D3D3D', selectbackground='#2B57B7', activestyle='none', selectmode=SINGLE)
-    for i in new_w.items():
-        lb.insert('end', f'{i[0]}: {i[1][0]}')
+    insert_color_item(lb, new_w)
 
-    b_sort1 = Button(topbuttonframe, text='Sort by Amount', command=lambda: sort_by_amount(lb), width=150, bg='#616161', fg='white')
+    b_sort1 = Button(topbuttonframe, text='Sort by Frequency', command=lambda: sort_by_amount(lb), width=150, bg='#616161', fg='white')
     b_sort2 = Button(topbuttonframe, text='Sort by Adding', command=lambda: sort_by_adding(lb), width=150, bg='#616161', fg='white')
 
     # buttons
-    highlight_button = Button(buttonframe, text='Highlight', command=lambda: highlight_item(lb), width=150, bg='#616161', fg='white')
+    highlight_button = Button(buttonframe, text='Highlight', command=lambda: highlight_item(new_w, lb), width=150, bg='#616161', fg='white')
     delete_button = Button(buttonframe, text='Delete', command=lambda: delete_item(lb, W_DIR, new_w), width=150, bg='#616161', fg='white')
     clear_button = Button(buttonframe, text='Clear', command=lambda: clear_items(lb, W_DIR, new_w), width=150, bg='#616161', fg='white')
 
