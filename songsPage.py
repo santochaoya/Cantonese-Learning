@@ -44,11 +44,30 @@ def mainPage(old_ws):
 def get_song(lb):
     global SONG
 
-    value = lb.get(lb.curselection())
-    SONG.set(value)
-        
+    if lb.curselection() != ():
+        value = lb.get(lb.curselection())
+        SONG.set(value)
+  
+def songPage_2_mainPage(ws, ws1):
+        ws1.destroy()
+        mainPage(ws)  
+
+def songPage_2_gamePage(ws, ws1, lb):
+    get_song(lb)
+
+    if SONG.get() != '':
+        gamePage(ws, ws1, lb)
+
+def songPage_2_lyricsPage(ws, ws1, lb):
+    get_song(lb)
+
+    if SONG.get() != '':
+        lyricsPage(ws, ws1, lb)
+    
 def songPage(ws):
-    global SONG_LIST
+    global SONG_LIST, SONG
+
+    SONG = StringVar()
 
     # Song Page
     ws1 = Toplevel(ws)
@@ -60,11 +79,7 @@ def songPage(ws):
     listframe = Frame(ws1)
     buttonframe = Frame(ws1)
 
-    def songPage_2_mainPage(ws):
-        ws1.destroy()
-        mainPage(ws)
-    
-    b = Button(returnframe, text='Back', command=lambda: songPage_2_mainPage(ws), width=100, bg='#616161', fg='white')
+    b = Button(returnframe, text='Back', command=lambda: songPage_2_mainPage(ws, ws1), width=100, bg='#616161', fg='white')
 
     all_f = glob.glob('data/songs/*.txt')
     SONG_LIST = [x[11:-4] for x in all_f]
@@ -73,8 +88,8 @@ def songPage(ws):
     for s in SONG_LIST:
         lb.insert('end', s)
 
-    b1 = Button(buttonframe, text='Play Cantonese', command=lambda: gamePage(ws, ws1, lb), width=200, bg='#616161', fg='white')
-    b2 = Button(buttonframe, text='Show Lyrics', command=lambda: lyricsPage(ws, ws1, lb), width=200, bg='#616161', fg='white')
+    b1 = Button(buttonframe, text='Play Cantonese', command=lambda: songPage_2_gamePage(ws, ws1, lb), width=200, bg='#616161', fg='white')
+    b2 = Button(buttonframe, text='Show Lyrics', command=lambda: songPage_2_lyricsPage(ws, ws1, lb), width=200, bg='#616161', fg='white')
 
     returnframe.pack(side=TOP, anchor=NW)
     b.pack(padx=10)
@@ -102,7 +117,6 @@ def lyricsPage(ws, ws1, lb):
     ws3.title('Show Lyrics')
     center_window(ws3)
 
-    get_song(lb)
     ws1.destroy()
 
     # Create components
@@ -137,34 +151,33 @@ def lyricsPage(ws, ws1, lb):
 #  -- A Label to display comparison
 # ------------------------------------------------------------------
 
-def next_lyrics(display_c_l, cn_l, t, e):
-    global N
-
-    N += 1
+def display_new_lyrics(N, display_c_l, cn_l, t, e):
     value = cn_l[N]
     display_c_l.set(value)
 
     t.delete("1.0", END)
     e.delete(0, END)
     e.focus_set()
+
+def next_lyrics(display_c_l, cn_l, t, e):
+    global N
+
+    N += 1
+    display_new_lyrics(display_c_l, cn_l, t, e)
 
 def previous_lyrics(display_c_l, cn_l, t, e):
     global N
 
     N -= 1
-    value = cn_l[N]
-    display_c_l.set(value)
+    display_new_lyrics(display_c_l, cn_l, t, e)
 
-    t.delete("1.0", END)
-    e.delete(0, END)
-    e.focus_set()
 def check_lyrics(input_l, cn_l, en_l, w_dir, t, t2):
     global N
 
     if (len(input_l) == 0) and (t.get('1.0', END) == '\n'):
         t.insert(END, 'There is no input')
 
-    elif t.get('1.0', END) in ['There is no input\n', '\n']:
+    elif t.get('1.0', END) in ['There is no input\n', '\n'] and len(input_l) > 0:
         t.delete('1.0', END)
 
         cn_w = list(cn_l.replace(' ', ''))
@@ -197,7 +210,7 @@ def gamePage(ws, ws1, lb):
     ws2.title('Check Cantonese')
     center_window(ws2)
 
-    get_song(lb)
+    # get_song(lb)
     ws1.destroy()
 
     # Get lyrics
@@ -218,12 +231,6 @@ def gamePage(ws, ws1, lb):
     e = Entry(frame, bg='black')
     e.focus_set()
 
-    def clear_entry():
-        e.delete(0, 'end')
-        e.focus_set()
-
-    clear_b = Button(frame, text='x', command=lambda:clear_entry(), width=20, height=20, bg='#616161', fg='white')
-    
     # textframe = Frame(ws2)
     t = Text(frame, height=2, font=("arial", 14))
     t.tag_config('warning', foreground='#A6FF2E')
@@ -252,7 +259,6 @@ def gamePage(ws, ws1, lb):
 
     l.pack(fill='x', padx=10, pady=5)
     e.pack(fill='x', padx=10, pady=5)
-    # clear_b.pack(padx=10, pady=5)
     t.pack(fill='x', expand=True, padx=10, pady=5)
 
     buttonframe.pack()
