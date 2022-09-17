@@ -163,13 +163,13 @@ def next_lyrics(display_c_l, cn_l, t, e):
     global N
 
     N += 1
-    display_new_lyrics(display_c_l, cn_l, t, e)
+    display_new_lyrics(N, display_c_l, cn_l, t, e)
 
 def previous_lyrics(display_c_l, cn_l, t, e):
     global N
 
     N -= 1
-    display_new_lyrics(display_c_l, cn_l, t, e)
+    display_new_lyrics(N, display_c_l, cn_l, t, e)
 
 def check_lyrics(input_l, cn_l, en_l, w_dir, t, t2):
     global N
