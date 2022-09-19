@@ -2,6 +2,7 @@ import string
 import os
 import glob
 import json
+import re
 
 import pandas as pd
 
@@ -108,6 +109,25 @@ def check_lyrics(input_l, cn_l, en_l, new_w, w_dir):
     correct_ls = ' '.join(colored_en_l)  
 
     return output_ls, correct_ls
+
+def display_lyrics(l_dir):
+    """Display lyrics in app with specific format
+    """
+
+    # read ls
+    clean_l = read_lyrics(l_dir)
+    cn_l, en_l = clean_l[::2], split_words_tones(clean_l[1::2])
+
+    # get length of ls
+    l_s = [len(x) for x in en_l]
+    t_cn_l = [list(re.sub('\s+', '', x)) for x in cn_l]
+
+    o_l = [] 
+    for i in range(len(t_cn_l)):
+        o_s = ''.join(f'{t_cn_l[i][j].center(int(l_s[i]/(len(cn_l[i]))))}' for j in range(len(t_cn_l[i])))
+        o_l.append(o_s)
+    
+    return '\n\n'.join(['\n'.join(x) for x in zip(o_l, en_l)])
 
 def play_lyrics(l_dir, w_dir):
     """ Play lyrics learning.

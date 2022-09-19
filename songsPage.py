@@ -132,7 +132,7 @@ def lyricsPage(ws, ws1, lb):
     b = Button(returnframe, text='Back', command=lambda: lyricsPage_2_songPage(ws), width=100, bg='#616161', fg='white')
 
     t = Text(frame, bg='#3D3D3D', font=("arial", 14))
-    t.insert('1.0', lc.show_lyrics(lyric_dir))
+    t.insert('1.0', lc.display_lyrics(lyric_dir))
     t.configure(state='disabled')
 
     # Show components on screen
