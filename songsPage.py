@@ -129,9 +129,9 @@ def songPage(ws):
     b = Button(searchframe, text='Back', command=lambda: songPage_2_mainPage(ws, ws1), width=100, bg='#616161', fg='white')
     entry_default = StringVar()
     entry_default.set('Search Songs')
-    search_box = Entry(searchframe, textvariable=entry_default)
+    search_box = Entry(searchframe, textvariable=entry_default, width=30)
 
-    ser_b = Button(searchframe, text='Search Online', command=lambda: search_song(search_box, SONG_LIST, lb), width=100, bg='#616161', fg='white')
+    ser_b = Button(searchframe, text='Search Online', command=lambda: search_song(search_box, SONG_LIST, lb), width=150, bg='#616161', fg='white')
 
     def on_click(event):
         """ Clear search box when click on it
@@ -150,9 +150,9 @@ def songPage(ws):
     Update_listbox(SONG_LIST, lb)
 
     # button frame
-    b1 = Button(buttonframe, text='Play Cantonese', command=lambda: songPage_2_gamePage(ws, ws1, lb), width=200, bg='#616161', fg='white')
-    b2 = Button(buttonframe, text='Show Lyrics', command=lambda: songPage_2_lyricsPage(ws, ws1, lb), width=200, bg='#616161', fg='white')
-    dl_b = Button(buttonframe, text='Download Lyric', command=lambda: download_event(lb), width=200, bg='#616161', fg='white')
+    b1 = Button(buttonframe, text='Play Cantonese', command=lambda: songPage_2_gamePage(ws, ws1, lb), width=150, bg='#616161', fg='white')
+    b2 = Button(buttonframe, text='Show Lyrics', command=lambda: songPage_2_lyricsPage(ws, ws1, lb), width=150, bg='#616161', fg='white')
+    dl_b = Button(buttonframe, text='Download Lyric', command=lambda: download_event(lb), width=150, bg='#616161', fg='white')
 
     searchframe.pack(side=TOP, fill=X)
     b.pack(side=LEFT, padx=10)
@@ -166,7 +166,7 @@ def songPage(ws):
     buttonframe.pack()
     b1.pack(side=LEFT, padx=10, pady=5)
     b2.pack(side=LEFT, padx=10, pady=5)
-    dl_b.pack(side=LEFT, padx=10, pady=5)
+    dl_b.pack(side=RIGHT, padx=10, pady=5)
 
     ws1.mainloop()
 
