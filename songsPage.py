@@ -7,6 +7,7 @@ import re
 
 import learnCantonese as lc
 from utils import *
+import pandas as pd
 
 
 # ------------------------------------------------------------------
@@ -22,9 +23,10 @@ def mainPage(old_ws):
     ws.title('Learning Cantonese')
     center_window(ws)
 
-    # Create components
+    # Create buttons
     menubar(ws, gamePage, newWordsPage)
     buttonframe = Frame(ws)
+    buttonframe.focus_set()
 
     b1 = Button(buttonframe, text='Select Songs', command=lambda: songPage(ws), width=200, bg='#616161', fg='white')
     b2 = Button(buttonframe, text='Learn New Words', command=lambda: newWordsPage(ws), width=200, bg='#616161', fg='white')
@@ -63,7 +65,51 @@ def songPage_2_lyricsPage(ws, ws1, lb):
 
     if SONG.get() != '':
         lyricsPage(ws, ws1, lb)
+
+def get_all_songs():
+    global SONG_LIST
+
+    all_f = glob.glob('data/songs/*.txt')
+    SONG_LIST = [x[11:-4] for x in all_f]
+
+def search_song(entry, data, lb):
+
+    song_df = pd.read_csv('data/songs info.csv').drop_duplicates(subset='song id').drop_duplicates(subset=['singer', 'song'])
+    all_res = song_df[song_df['song'] == entry.get()]
+
+    Update_listbox(all_res[['song id', 'singer', 'song']].values.tolist(), lb)
+    entry.delete(0, END)
+
+def search_res(event, lb):
+    global SONG_LIST
+
+    val = event.widget.get()
+
+    if val == '':
+        data = SONG_LIST
+    else:
+        data = [item for item in SONG_LIST if val.lower() in item.lower()]
+    Update_listbox(data, lb)
+
+def Update_listbox(data, lb):
+	
+	lb.delete(0, 'end')
+
+	# put new data
+	for item in data:
+		lb.insert('end', item)
+
+def download_event(lb):
+    global SONG_LIST
+
+    # Get song id
+    if lb.curselection() != ():
+        song_info = lb.get(lb.curselection())
     
+    lc.download_lyric(song_info)
+    get_all_songs()
+    Update_listbox(SONG_LIST, lb)
+
 def songPage(ws):
     global SONG_LIST, SONG
 
@@ -75,31 +121,52 @@ def songPage(ws):
     center_window(ws1)
 
     # Create components
-    returnframe = Frame(ws1)
+    searchframe = Frame(ws1)
     listframe = Frame(ws1)
     buttonframe = Frame(ws1)
 
-    b = Button(returnframe, text='Back', command=lambda: songPage_2_mainPage(ws, ws1), width=100, bg='#616161', fg='white')
+    # search frame
+    b = Button(searchframe, text='Back', command=lambda: songPage_2_mainPage(ws, ws1), width=100, bg='#616161', fg='white')
+    entry_default = StringVar()
+    entry_default.set('Search Songs')
+    search_box = Entry(searchframe, textvariable=entry_default)
 
-    all_f = glob.glob('data/songs/*.txt')
-    SONG_LIST = [x[11:-4] for x in all_f]
+    ser_b = Button(searchframe, text='Search Online', command=lambda: search_song(search_box, SONG_LIST, lb), width=100, bg='#616161', fg='white')
+
+    def on_click(event):
+        """ Clear search box when click on it
+        """
+
+        event.widget.delete(0, END)
+
+    search_box.bind("<Button-1>", on_click)
+    
+    # song list frame
+    get_all_songs()
 
     lb = Listbox(listframe, listvariable=SONG_LIST, borderwidth=0, bg='#3D3D3D', selectbackground='#2B57B7', activestyle='none', selectmode=SINGLE)
     for s in SONG_LIST:
         lb.insert('end', s)
+    Update_listbox(SONG_LIST, lb)
 
+    # button frame
     b1 = Button(buttonframe, text='Play Cantonese', command=lambda: songPage_2_gamePage(ws, ws1, lb), width=200, bg='#616161', fg='white')
     b2 = Button(buttonframe, text='Show Lyrics', command=lambda: songPage_2_lyricsPage(ws, ws1, lb), width=200, bg='#616161', fg='white')
+    dl_b = Button(buttonframe, text='Download Lyric', command=lambda: download_event(lb), width=200, bg='#616161', fg='white')
 
-    returnframe.pack(side=TOP, anchor=NW)
-    b.pack(padx=10)
+    searchframe.pack(side=TOP, fill=X)
+    b.pack(side=LEFT, padx=10)
+    search_box.pack(side=LEFT, fill=BOTH)
+    search_box.bind('<KeyRelease>', lambda event: search_res(event, lb))
+    ser_b.pack(side=RIGHT, padx=10)
 
-    listframe.pack(fill='both', expand=1)
-    lb.pack(fill='both', expand=1, padx=10, pady=20)
+    listframe.pack(fill=BOTH, expand=1)
+    lb.pack(fill=BOTH, expand=1, padx=10, pady=20)
     
     buttonframe.pack()
     b1.pack(side=LEFT, padx=10, pady=5)
-    b2.pack(side=RIGHT, padx=10, pady=5)
+    b2.pack(side=LEFT, padx=10, pady=5)
+    dl_b.pack(side=LEFT, padx=10, pady=5)
 
     ws1.mainloop()
 
@@ -120,7 +187,7 @@ def lyricsPage(ws, ws1, lb):
     ws1.destroy()
 
     # Create components
-    returnframe = Frame(ws3)
+    searchframe = Frame(ws3)
     frame = Frame(ws3)
 
     lyric_dir = f'data/songs/{SONG.get()}.txt'
@@ -129,15 +196,15 @@ def lyricsPage(ws, ws1, lb):
         ws3.destroy()
         songPage(ws)
     
-    b = Button(returnframe, text='Back', command=lambda: lyricsPage_2_songPage(ws), width=100, bg='#616161', fg='white')
+    b = Button(searchframe, text='Back', command=lambda: lyricsPage_2_songPage(ws), width=100, bg='#616161', fg='white')
 
     t = Text(frame, bg='#3D3D3D', font=("arial", 14))
     t.insert('1.0', lc.display_lyrics(lyric_dir))
     t.configure(state='disabled')
 
     # Show components on screen
-    returnframe.pack(side=TOP, anchor=NW)
-    frame.pack(fill='both', expand=1, padx=10)
+    searchframe.pack(side=TOP, anchor=NW)
+    frame.pack(fill=BOTH, expand=1, padx=10)
 
     b.pack(side=TOP, anchor=NW)
     t.pack(expand=1, padx=10, pady=5)
@@ -223,7 +290,7 @@ def gamePage(ws, ws1, lb):
     display_c_l.set(cn_l[N])
 
     # components to input cantonese
-    returnframe = Frame(ws2)
+    searchframe = Frame(ws2)
     frame = Frame(ws2)
 
     l = Label(frame, textvariable=display_c_l, bg='#323232', font=("arial", 14), height=2)
@@ -240,9 +307,9 @@ def gamePage(ws, ws1, lb):
         ws2.destroy()
         songPage(ws)
 
-    back_b = Button(returnframe, text='Back', command=lambda: gamePage_2_songPage(ws), width=100, bg='#616161', fg='white')
+    back_b = Button(searchframe, text='Back', command=lambda: gamePage_2_songPage(ws), width=100, bg='#616161', fg='white')
  
-    returnframe.pack(side=TOP, anchor=NW)
+    searchframe.pack(side=TOP, anchor=NW)
     back_b.pack(padx=10)
 
     buttonframe = Frame(ws2)
@@ -365,8 +432,8 @@ def newWordsPage(ws):
     b_sort1.pack(side=RIGHT, padx=10, pady=5)
     b_sort2.pack(side=RIGHT, padx=10, pady=5)
 
-    listframe.pack(fill='both', expand=1)
-    lb.pack(fill='both', expand=1, padx=10, pady=20)
+    listframe.pack(fill=BOTH, expand=1)
+    lb.pack(fill=BOTH, expand=1, padx=10, pady=20)
 
     buttonframe.pack()
     highlight_button.pack(side=LEFT, padx=10, pady=5)

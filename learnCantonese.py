@@ -5,7 +5,8 @@ import json
 import re
 
 import pandas as pd
-
+import requests
+from bs4 import BeautifulSoup
 
 def read_lyrics(dir):
     """ Read lyrics from local, clean lyrics
@@ -149,6 +150,25 @@ def play_lyrics(l_dir, w_dir):
 
         print('Your input: ', output_ls)
         print(f'Correct lyrics: {correct_ls}\n')
+
+def get_html_part(url, part):
+    """ extract part from a url
+    """
+    link = url
+    f = requests.get(link).content
+
+    return BeautifulSoup(f, 'html.parser').find(part)
+
+def download_lyric(song_info):
+
+    with open(f'data/songs/{song_info[2]}.txt', 'w') as lyric_f:
+        url = f'https://www.feitsui.com/zh-hans/lyrics/{song_info[0]}'
+        parent = get_html_part(url, 'body')
+
+        for p in parent.find('article').find_all('p'):
+            for l in p.contents:
+                if '<' not in str(l):
+                    lyric_f.write(str(l).replace('翡翠粤语歌词', '').strip() + '\n')
 
 def learn_new_words():
     """ Check new words book.
