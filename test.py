@@ -1,7 +1,7 @@
 from dis import dis
 from tkinter import *
 import learnCantonese as lc
-from songsPage import next_lyrics
+from app import next_lyrics
 from utils import *
 
 
