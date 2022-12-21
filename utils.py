@@ -2,13 +2,15 @@ from tkinter import *
 from tkmacosx import Button
 
 
-def center_window(window):
+def center_window(window, method='normal'):
     """Initial window size and postion
     """
 
     # Window size
-    ws_width = 600
-    ws_height = 480
+    if method == 'normal':
+        ws_width, ws_height = 600, 480
+    elif method == 'large':
+        ws_width, ws_height = 600, 1080
 
     # Set Window to center
     screen_width = window.winfo_screenwidth()

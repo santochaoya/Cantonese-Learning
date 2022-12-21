@@ -4,6 +4,7 @@ from tkmacosx import Button
 import glob
 import os
 import re
+from pinyin import get
 
 import learnCantonese as lc
 from utils import *
@@ -64,13 +65,13 @@ def songPage_2_lyricsPage(ws, ws1, lb):
     get_song(lb)
 
     if SONG.get() != '':
-        lyricsPage(ws, ws1, lb)
+        lyricsPage(ws, ws1)
 
 def get_all_songs():
     global SONG_LIST
 
     all_f = glob.glob('data/songs/*.txt')
-    SONG_LIST = [x[11:-4] for x in all_f]
+    SONG_LIST = sorted([x[11:-4] for x in all_f], key=get)
 
 def search_song(entry, data, lb):
 
@@ -145,9 +146,12 @@ def songPage(ws):
     get_all_songs()
 
     lb = Listbox(listframe, listvariable=SONG_LIST, borderwidth=0, bg='#3D3D3D', selectbackground='#2B57B7', activestyle='none', selectmode=SINGLE)
+    scrollbar = Scrollbar(lb)
     for s in SONG_LIST:
         lb.insert('end', s)
     Update_listbox(SONG_LIST, lb)
+    lb.config(yscrollcommand=scrollbar.set)
+    scrollbar.config(command=lb.yview)
 
     # button frame
     b1 = Button(buttonframe, text='Play Cantonese', command=lambda: songPage_2_gamePage(ws, ws1, lb), width=150, bg='#616161', fg='white')
@@ -162,7 +166,8 @@ def songPage(ws):
 
     listframe.pack(fill=BOTH, expand=1)
     lb.pack(fill=BOTH, expand=1, padx=10, pady=20)
-    
+    scrollbar.pack(side=RIGHT, fill='y')
+
     buttonframe.pack()
     b1.pack(side=LEFT, padx=10, pady=5)
     b2.pack(side=LEFT, padx=10, pady=5)
@@ -176,13 +181,13 @@ def songPage(ws):
 # ------------------------------------------------------------------
 
 
-def lyricsPage(ws, ws1, lb):
+def lyricsPage(ws, ws1):
     global SONG
 
     # Lyrics Page
     ws3 = Toplevel(ws)
     ws3.title('Show Lyrics')
-    center_window(ws3)
+    center_window(ws3, method='large')
 
     ws1.destroy()
 
@@ -197,17 +202,26 @@ def lyricsPage(ws, ws1, lb):
         songPage(ws)
     
     b = Button(searchframe, text='Back', command=lambda: lyricsPage_2_songPage(ws), width=100, bg='#616161', fg='white')
+    t_title = Text(searchframe, bg='#323232', font=("arial", 14), borderwidth=0, height=1)
+    t_title.insert('1.0', SONG.get())
 
-    t = Text(frame, bg='#3D3D3D', font=("arial", 14))
-    t.insert('1.0', lc.display_lyrics(lyric_dir))
-    t.configure(state='disabled')
+    t_main = Text(frame, bg='#3D3D3D', font=("arial", 14), borderwidth=0)
+    scrollbar = Scrollbar(t_main)
+
+    t_main.config(yscrollcommand=scrollbar.set)
+    t_main.insert('1.0', lc.display_lyrics(lyric_dir))
+    t_main.configure(state='disabled')
+
+    scrollbar.config(command=t_main.yview)
 
     # Show components on screen
     searchframe.pack(side=TOP, anchor=NW)
     frame.pack(fill=BOTH, expand=1, padx=10)
 
-    b.pack(side=TOP, anchor=NW)
-    t.pack(expand=1, padx=10, pady=5)
+    b.pack(side=LEFT, padx=10, pady=5)
+    t_title.pack(side=LEFT, fill=BOTH, padx=10, pady=5)
+    t_main.pack(expand=1, fill=BOTH, padx=10, pady=5)
+    scrollbar.pack(side=RIGHT, fill='y')
 
     ws3.mainloop()
 
@@ -417,7 +431,11 @@ def newWordsPage(ws):
     # listbox
     new_w = dict(lc.read_new_words(W_DIR).items())
     lb = Listbox(listframe, listvariable=SONG_LIST, borderwidth=0, bg='#3D3D3D', selectbackground='#2B57B7', activestyle='none', selectmode=SINGLE)
+    scrollbar = Scrollbar(lb)
     insert_color_item(lb, new_w)
+
+    lb.config(yscrollcommand=scrollbar.set)
+    scrollbar.config(command=lb.yview)
 
     b_sort1 = Button(topbuttonframe, text='Sort by Frequency', command=lambda: sort_by_amount(lb), width=150, bg='#616161', fg='white')
     b_sort2 = Button(topbuttonframe, text='Sort by Adding', command=lambda: sort_by_adding(lb), width=150, bg='#616161', fg='white')
@@ -434,6 +452,7 @@ def newWordsPage(ws):
 
     listframe.pack(fill=BOTH, expand=1)
     lb.pack(fill=BOTH, expand=1, padx=10, pady=20)
+    scrollbar.pack(side=RIGHT, fill='y')
 
     buttonframe.pack()
     highlight_button.pack(side=LEFT, padx=10, pady=5)
